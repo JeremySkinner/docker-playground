@@ -9,6 +9,8 @@ services:
       - 8080:80
     volumes:
       - .:/srv/app
+    links:
+      - mariadb
     environment:
       DB_HOST: mariadb
       DB_DATABASE: drupal
