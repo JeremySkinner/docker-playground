@@ -1,0 +1,26 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    image: jeremy-dev
+    ports:
+      - 8080:80
+    volumes:
+      - .:/srv/app
+    environment:
+      DB_HOST: mariadb
+      DB_DATABASE: drupal
+      DB_USERNAME: drupal
+      DB_PASSWORD: drupal
+  
+  mariadb:
+    image: mariadb:10.2
+    ports:
+      - 13306:3306
+    environment:
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: drupal
+      MYSQL_ROOT_PASSWORD: password
