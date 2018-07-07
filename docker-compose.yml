@@ -10,20 +10,21 @@ services:
       - 8080:80
     volumes:
       - .:/var/sites
-    links:
-      - mariadb
+    tty: true
+#    links:
+#      - mariadb
     #environment:
       #DB_HOST: mariadb
       #DB_DATABASE: drupal
       #DB_USERNAME: drupal
       #DB_PASSWORD: drupal
   
-  mariadb:
-    image: mariadb:10.2
-    ports:
-      - 13306:3306
-    environment:
-      #MYSQL_DATABASE: db
-      MYSQL_USER: db
-      MYSQL_PASSWORD: db
-      MYSQL_ROOT_PASSWORD: password
+#  mariadb:
+#    image: mariadb:10.2
+#    ports:
+#      - 13306:3306
+#    environment:
+#      #MYSQL_DATABASE: db
+#      MYSQL_USER: db
+#      MYSQL_PASSWORD: db
+#      MYSQL_ROOT_PASSWORD: password

@@ -21,7 +21,7 @@ RUN a2enmod rewrite
 # Update the PHP.ini file, enable <? ?> tags and quieten logging.
 # RUN sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php/7.0/apache2/php.ini
 # Enable error logging
-RUN sed -i "s/display_errors = .$/display_errors = On/" /etc/php/7.0/apache2/php.ini
+RUN sed -i "s/display_errors = Off/display_errors = On/" /etc/php/7.0/apache2/php.ini
 
 # Manually set up the apache environment variables
 ENV APACHE_RUN_USER web
@@ -37,11 +37,20 @@ EXPOSE 80
 # ADD . /var/sites
 
 # Update the default apache site with the config we created.
-ADD .docker/apache-config.conf /etc/apache2/sites-enabled/000-default.conf
+# ADD .docker/apache-config.conf /etc/apache2/sites-enabled/000-default.conf
+# RUN touch /etc/apache2/sites-enabled/000-default.conf
 
-# Script for managing virtual hosts
-RUN wget -O /usr/local/bin/virtualhost https://raw.githubusercontent.com/RoverWire/virtualhost/master/virtualhost.sh
-RUN chmod +x /usr/local/bin/virtualhost
+# Add the vhost script
+ADD .docker/rebuild-hosts.php /usr/local/bin/rebuild-hosts
+RUN chmod +x /usr/local/bin/rebuild-hosts
 
-# By default start up apache in the foreground, override with /bin/bash for interative.
-CMD /usr/sbin/apache2ctl -D FOREGROUND
+# Download drush/console:
+#RUN \
+#    wget -O /usr/local/bin/drush "https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar"; \
+#    wget -O /usr/local/bin/drupal "https://github.com/hechoendrupal/drupal-console-launcher/releases/download/1.8.0/drupal.phar" \
+#    chmod +x /usr/local/bin/drush && chmod +x /usr/local/bin/drupal
+
+RUN service apache2 start
+
+# CMD /bin/bash
+#RUN /bin/bash
