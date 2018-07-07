@@ -20,9 +20,7 @@ RUN apt-get update && apt-get -y install software-properties-common \
 RUN a2enmod php7.0
 RUN a2enmod rewrite
 
-# Update the PHP.ini file, enable <? ?> tags and quieten logging.
-# RUN sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php/7.0/apache2/php.ini
-# Enable error logging
+# Enable verbose errors
 RUN sed -i "s/display_errors = Off/display_errors = On/" /etc/php/7.0/apache2/php.ini
 RUN sed -i "s/display_errors = Off/display_errors = On/" /etc/php/7.0/cli/php.ini
 
@@ -36,17 +34,6 @@ ENV APACHE_PID_FILE /var/run/apache2.pid
 # Expose apache.
 EXPOSE 80
 
-# Copy this repo into place.
-# ADD . /var/sites
-
-# Update the default apache site with the config we created.
-# ADD .docker/apache-config.conf /etc/apache2/sites-enabled/000-default.conf
-# RUN touch /etc/apache2/sites-enabled/000-default.conf
-
-# Add the vhost script
-#ADD .docker/rebuild-hosts.php /usr/local/bin/rebuild-hosts
-#RUN chmod +x /usr/local/bin/rebuild-hosts
-
 # Download drush/console:
 #RUN \
 #    wget -O /usr/local/bin/drush "https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar"; \
@@ -54,6 +41,3 @@ EXPOSE 80
 #    chmod +x /usr/local/bin/drush && chmod +x /usr/local/bin/drupal
 
 RUN service apache2 start
-
-# CMD /bin/bash
-#RUN /bin/bash
