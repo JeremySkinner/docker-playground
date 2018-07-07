@@ -5,26 +5,32 @@ services:
       context: .
       dockerfile: .docker/Dockerfile
     image: jeremy-dev
-    container_name: dev
+    container_name: web
     ports:
       - 8080:80
     volumes:
       - .:/var/sites
     tty: true
-#    links:
-#      - mariadb
+    links:
+      - db.localhost
     #environment:
       #DB_HOST: mariadb
       #DB_DATABASE: drupal
       #DB_USERNAME: drupal
       #DB_PASSWORD: drupal
   
-#  mariadb:
-#    image: mariadb:10.2
-#    ports:
-#      - 13306:3306
-#    environment:
-#      #MYSQL_DATABASE: db
-#      MYSQL_USER: db
-#      MYSQL_PASSWORD: db
-#      MYSQL_ROOT_PASSWORD: password
+  db.localhost:
+    image: mariadb:10.2
+    ports:
+      - 3306:3306
+    container_name: db
+    environment:
+      #MYSQL_DATABASE: db
+      MYSQL_USER: db
+      MYSQL_PASSWORD: db
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - dbvolume:/var/lib/mysql
+
+volumes:
+  dbvolume:

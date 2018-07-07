@@ -12,7 +12,9 @@ RUN apt-get update && apt-get -y install software-properties-common \
     && apt-get update \
     && apt-get -y upgrade \
     && apt-get -y install \
-    apache2 php7.0 php7.0-mysql libapache2-mod-php7.0 curl
+    curl apache2 libapache2-mod-php7.0 php7.0 php7.0-mysql \
+    php7.0-gd php7.0-dom php7.0-xml php7.0-simplexml
+
 
 # Enable apache mods.
 RUN a2enmod php7.0
@@ -22,6 +24,7 @@ RUN a2enmod rewrite
 # RUN sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php/7.0/apache2/php.ini
 # Enable error logging
 RUN sed -i "s/display_errors = Off/display_errors = On/" /etc/php/7.0/apache2/php.ini
+RUN sed -i "s/display_errors = Off/display_errors = On/" /etc/php/7.0/cli/php.ini
 
 # Manually set up the apache environment variables
 ENV APACHE_RUN_USER web
@@ -41,8 +44,8 @@ EXPOSE 80
 # RUN touch /etc/apache2/sites-enabled/000-default.conf
 
 # Add the vhost script
-ADD .docker/rebuild-hosts.php /usr/local/bin/rebuild-hosts
-RUN chmod +x /usr/local/bin/rebuild-hosts
+#ADD .docker/rebuild-hosts.php /usr/local/bin/rebuild-hosts
+#RUN chmod +x /usr/local/bin/rebuild-hosts
 
 # Download drush/console:
 #RUN \
