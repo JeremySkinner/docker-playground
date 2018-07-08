@@ -9,21 +9,16 @@ services:
       - site1
       - site2
     ports:
-      #- '80:80'
       - '8080:80'
-      #- '3306:3006'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  
+
   db:
     image: mariadb:10.2
     ports:
       - 3306:3306
     container_name: db
     environment:
-      #MYSQL_DATABASE: db
-      # MYSQL_USER: db
-      # MYSQL_PASSWORD: db
       MYSQL_ROOT_PASSWORD: db
     volumes:
       - dbvolume:/var/lib/mysql
@@ -31,34 +26,6 @@ services:
       - default
       - site1
       - site2
-
-  # db.localhost:
-  #   image: wodby/mariadb:10.2-3.1.3
-  #   container_name: "db"
-  #   stop_grace_period: 30s
-  #   ports:
-  #     - 3306:3306
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: db
-  #     # MYSQL_DATABASE: $DB_NAME
-  #     # MYSQL_USER: $DB_USER
-  #     # MYSQL_PASSWORD: $DB_PASSWORD
-  #   volumes:
-  #     - .data/:/var/lib/mysql
-  #   networks:
-  #     - default
-  
-#    volumes:
-#      - ./mariadb-init:/docker-entrypoint-initdb.d # Place init .sql file(s) here.
-#      - /path/to/mariadb/data/on/host:/var/lib/mysql # I want to manage volumes manually.
-
-  # mailhog:
-  #   image: mailhog/mailhog
-  #   container_name: "mailhog"
-  #   labels:
-  #     - 'traefik.backend=mailhog'
-  #     - 'traefik.port=8025'
-  #     - 'traefik.frontend.rule=Host:mailhog.localhost'
 
 networks:
   site1:
