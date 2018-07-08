@@ -6,6 +6,6 @@ param(
   [string[]]$Parameters
 )
 
-. "$PSScriptRoot\.docker\docker.ps1"
+. "$PSScriptRoot\..\.docker\docker.ps1"
 
 Invoke-Docker $command @Parameters

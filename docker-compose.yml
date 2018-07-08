@@ -27,6 +27,19 @@ services:
       - site1
       - site2
 
+  mailhog:
+    image: mailhog/mailhog
+    container_name: "mailhog"
+    labels:
+      - 'traefik.backend=mailhog'
+      - 'traefik.port=8025'
+      - 'traefik.frontend.rule=Host:mailhog.localhost'
+    networks:
+      - default
+      - site1
+      - site2
+
+
 networks:
   site1:
     external: 
