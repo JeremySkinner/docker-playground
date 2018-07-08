@@ -8,6 +8,10 @@ param(
 
 Import-Module PSYaml
 
+$options = @(
+  [System.Management.Automation.Host.ChoiceDescription]::new('&No', 'No')
+  [System.Management.Automation.Host.ChoiceDescription]::new('&Yes', 'Yes')
+)
 function Invoke-DockerUp {
   Import-EnvFile {
     Write-Host "Starting up containers for ${env:PROJECT_NAME}..."
@@ -25,8 +29,19 @@ function Invoke-DockerStop {
 
 function Invoke-DockerRm {
   Import-EnvFile {
-    Write-Host "Removing containers for ${env:PROJECT_NAME}..."
-    docker-compose down -v
+    $confirm = $host.ui.PromptForChoice("Removing containers and volumes for ${env:PROJECT_NAME}. Are you sure you want to continue?", "", $options, 0)
+    if ($confirm) {
+      docker-compose down -v
+    }
+  }
+}
+
+function Invoke-DockerDown {
+  Import-EnvFile {
+    $confirm = $host.ui.PromptForChoice("Removing containers for ${env:PROJECT_NAME}. Are you sure you want to continue?", "", $options, 0)
+    if ($confirm) {
+      docker-compose down
+    }
   }
 }
 
@@ -147,6 +162,7 @@ function Rebuild-Networks {
 switch($command) {
   'up'    { Invoke-DockerUp @Parameters }
   'stop'  { Invoke-DockerStop @Parameters }
+  'down'  { Invoke-Dockerdown @Parameters }
   'rm'    { Invoke-DockerRm @Parameters }
   'ls'    { Invoke-DockerLs @Parameters }
   'sh'    { Invoke-DockerSh @Parameters }
