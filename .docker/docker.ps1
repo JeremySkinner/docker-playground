@@ -1,3 +1,5 @@
+$ErrorActionPreference = 'stop'
+
 Import-Module PSYaml
 
 $options = @(
@@ -124,7 +126,7 @@ function Add-Site {
   # Read the root file and update the site networks
   $yaml = Get-Content "$PSScriptRoot\..\docker-compose.yml" -Raw
   $config = ConvertFrom-Yaml $yaml
-  
+
   # Add a network that matches the new container
   $config.networks[$name] = @{ 'external' = @{ 'name' = "${name}_default" } }
   # Add network to traefik proxy
@@ -132,7 +134,7 @@ function Add-Site {
   $config.services.db.networks += $name
   $config.services.mailhog.networks += $name
 
-  $yaml = ConvertToYaml $config 
+  $yaml = ConvertToYaml $config
   $yaml | Out-File "$PSScriptRoot\..\docker-compose.yml" -Encoding utf8
 }
 function Rebuild-Networks {
@@ -152,7 +154,7 @@ function Rebuild-Networks {
 
   # Restart the container before making the changes
   & docker-compose down
-  $yaml = ConvertToYaml $config 
+  $yaml = ConvertToYaml $config
   $yaml | Out-File "$PSScriptRoot\..\docker-compose.yml" -Encoding utf8
   & docker-compose up -d
 }
@@ -160,22 +162,23 @@ function Rebuild-Networks {
 function ConvertToYaml ($obj) {
   # The default PSYaml serializer does not serialize well.
   $yaml = ConvertTo-Yaml $obj
-  
+  #return $yaml
+
   # Get rid of the \r characters
   # Skip the unnecessary "---" line
   # Fix the indent and remove the space from the end of each line
   # Add extra indent for list lines (as they're not indented enough)
   $yaml.Split("`r", [System.StringSplitOptions]::RemoveEmptyEntries) `
     | Select-Object -Skip 1 `
-    | ForEach-Object { $_.Substring(3).TrimEnd()  } `
-    | ForEach-Object { if ($_ -match  "^\W.+-") { "  $_" } else { $_ } } 
+    | ForEach-Object { $_.Substring(3).TrimEnd()  }
+    #| ForEach-Object { if ($_ -match  "^\W.+-") { "  $_" } else { $_ } }
 }
 
 function Invoke-Docker {
   param(
     [string]
     $command,
-  
+
     [parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Parameters
   )
@@ -190,6 +193,13 @@ function Invoke-Docker {
     'logs'  { Invoke-DockerLogs @Parameters }
     'add-site' { Add-Site @Parameters }
     'rebuild-networks' { Rebuild-Networks @Parameters }
+    'test' {
+      $yaml = Get-Content "$PSScriptRoot\..\docker-compose.yml" -Raw
+  $config = ConvertFrom-Yaml $yaml
+$yaml = ConvertToYaml $config
+$yaml | Out-File "$PSScriptRoot\..\docker-compose.yml" -Encoding utf8
+
+    }
     default {
       write-host "The following commands are available: up, stop, rm, ls, sh, logs, rebuild-networks, add-site"
     }
